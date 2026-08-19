@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1150">
+<rect width="900" height="1150" rx="34" fill="#ffffff"/>
+<rect x="0" y="0" width="900" height="18" fill="#2457c5"/>
+<text x="60" y="75" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#667085">VURALPT · HAREKET REHBERİ</text>
+<text x="60" y="125" font-family="Arial,sans-serif" font-size="36" font-weight="800" fill="#101828">Barbell Curl</text>
+<rect x="60" y="150" width="250" height="34" rx="17" fill="#eaf2ff"/>
+<text x="185" y="174" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2457c5">Biceps</text>
+<rect x="325" y="150" width="220" height="34" rx="17" fill="#f2f4f7"/>
+<text x="435" y="174" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#475467">Barbell</text>
+<rect x="560" y="150" width="140" height="34" rx="17" fill="#f2f4f7"/>
+<text x="630" y="174" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#475467">Başlangıç</text>
+<rect x="60" y="220" width="780" height="300" rx="24" fill="#f8fafc" stroke="#e4e7ec"/>
+<text x="90" y="260" font-family="Arial,sans-serif" font-size="17" font-weight="800" fill="#344054">HAREKET AKIŞI</text>
+<g transform="translate(100 175) rotate(0)" fill="none" stroke="#18324a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="-48" r="11" fill="#18324a" stroke="none"/><path d="M0 -36 L0 10"/><path d="M0 -25 L-30 -5 M0 -25 L30 -5"/><path d="M0 10 L-22 48 M0 10 L22 48"/><circle cx="-32" cy="-4" r="3" fill="#2f6df6" stroke="none"/><circle cx="32" cy="-4" r="3" fill="#2f6df6" stroke="none"/></g><g transform="translate(200 150) rotate(-30)" fill="none" stroke="#18324a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="-48" r="11" fill="#18324a" stroke="none"/><path d="M0 -36 L0 10"/><path d="M0 -25 L-30 -5 M0 -25 L30 -5"/><path d="M0 10 L-22 48 M0 10 L22 48"/><circle cx="-32" cy="-4" r="3" fill="#2f6df6" stroke="none"/><circle cx="32" cy="-4" r="3" fill="#2f6df6" stroke="none"/></g><g transform="translate(300 175) rotate(0)" fill="none" stroke="#18324a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="-48" r="11" fill="#18324a" stroke="none"/><path d="M0 -36 L0 10"/><path d="M0 -25 L-30 -5 M0 -25 L30 -5"/><path d="M0 10 L-22 48 M0 10 L22 48"/><circle cx="-32" cy="-4" r="3" fill="#2f6df6" stroke="none"/><circle cx="32" cy="-4" r="3" fill="#2f6df6" stroke="none"/></g>
+<path d="M135 300 C160 275 175 275 195 300" fill="none" stroke="#2f6df6" stroke-width="5"/><polygon points="195,300 181,291 184,307" fill="#2f6df6"/>
+<path d="M235 300 C260 275 275 275 295 300" fill="none" stroke="#2f6df6" stroke-width="5"/><polygon points="295,300 281,291 284,307" fill="#2f6df6"/>
+<text x="100" y="470" font-family="Arial,sans-serif" font-size="15" fill="#667085">Başlangıç</text>
+<text x="390" y="470" font-family="Arial,sans-serif" font-size="15" fill="#667085">Kontrollü hareket</text>
+<text x="675" y="470" font-family="Arial,sans-serif" font-size="15" fill="#667085">Kontrollü dönüş</text>
+<rect x="60" y="550" width="780" height="95" rx="18" fill="#f8fbff" stroke="#d9e6ff"/>
+<text x="85" y="585" font-family="Arial,sans-serif" font-size="16" font-weight="800" fill="#101828">ÖNERİLEN BAŞLANGIÇ</text>
+<text x="85" y="618" font-family="Arial,sans-serif" font-size="17" fill="#344054">3 set · 8–12 tekrar · 75 sn dinlenme</text>
+<text x="60" y="700" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#101828">NASIL YAPILIR?</text>
+<text x="60" y="735" font-family="Arial,sans-serif" font-size="16" fill="#475467">Barbell Curl hareketini kontrollü tempoda, uygun eklem hizasını koruyarak ve hedef kası hissederek yap.</text>
+<text x="60" y="760" font-family="Arial,sans-serif" font-size="16" fill="#475467"></text>
+<text x="60" y="825" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#101828">DİKKAT</text>
+<rect x="60" y="850" width="780" height="125" rx="18" fill="#fff8f6" stroke="#f2d6cf"/>
+<text x="85" y="885" font-family="Arial,sans-serif" font-size="16" fill="#7a271a">Teknik bozuluyorsa ağırlığı azalt. Ağrı, baş dönmesi, olağandışı nefes darlığı veya kendini kötü hissetme</text>
+<text x="85" y="912" font-family="Arial,sans-serif" font-size="16" fill="#7a271a"> durumunda egzersizi bırak.</text>
+<text x="60" y="1030" font-family="Arial,sans-serif" font-size="15" fill="#98a2b3">VuralPT · Görsel eğitim rehberi · Kişisel tıbbi değerlendirme yerine geçmez.</text>
+</svg>
