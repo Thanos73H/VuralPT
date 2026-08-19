@@ -65,7 +65,7 @@ function date(d){return new Intl.DateTimeFormat("tr-TR",{day:"2-digit",month:"2-
 function dur(ms){let m=Math.round(ms/60000);return m+" dk"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function nav(id){["navHome","navWorkout","navHistory","navAnalysis"].forEach(x=>document.getElementById(x)?.classList.toggle("active",x===id))}
-function photo(e){let src=`assets/info/${e.id}.svg`;return `<div class="photo vignette"><img src="${esc(src)}" alt="${esc(e.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span>Vinyet yüklenemedi</span></div><small class="credit">VuralPT Vinyet · Yerel</small>`}
+function photo(e){let src=e.illustration;return `<div class="photo vignette"><img src="${esc(src)}" alt="${esc(e.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span>Vinyet yüklenemedi</span></div><small class="credit">VuralPT Vinyet · Yerel</small>`}
 
 function home(){nav("navHome");let p=nextProgram(),last=S.history.at(-1);screen.innerHTML=`
 <section class="hero"><div class="eyebrow">BUGÜN</div><div class="suggest">● Önerilen: <b>${esc(p.name)}</b></div><h1>${esc(p.name.replace(" Antrenmanı",""))}</h1><p>${esc(p.focus)}</p>
