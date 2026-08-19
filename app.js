@@ -222,9 +222,15 @@ function healthCheck(ids){
 }
 
 function migrateV2(){
- if(!S.progression)S.progression={};
- if(!S.favorites)S.favorites=[];
- Object.keys(S.weights||{}).forEach(id=>{if(!S.progression[id])S.progression[id]={weight:S.weights[id],successful:0,pending:false}});
+ if(!S || typeof S!=="object") S={};
+ if(!Array.isArray(S.history))S.history=[];
+ if(!S.programs || typeof S.programs!=="object" || Array.isArray(S.programs))S.programs={};
+ if(!S.weights || typeof S.weights!=="object" || Array.isArray(S.weights))S.weights={};
+ if(!S.cycles || typeof S.cycles!=="object" || Array.isArray(S.cycles))S.cycles={};
+ if(!S.progression || typeof S.progression!=="object" || Array.isArray(S.progression))S.progression={};
+ if(!Array.isArray(S.favorites))S.favorites=[];
+ if(!Object.prototype.hasOwnProperty.call(S,"last"))S.last=null;
+ Object.keys(S.weights).forEach(id=>{if(!S.progression[id])S.progression[id]={weight:S.weights[id],successful:0,pending:false}});
  save();
 }
 
