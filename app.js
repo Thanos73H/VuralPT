@@ -237,3 +237,6 @@ function demoMode(){
  S.last="B";save();home();
 }
 function clearDemo(){S.history=[];S.last=null;save();home();}
+
+// Initial render: the app is loaded after the DOM, so render Home immediately.
+home();
