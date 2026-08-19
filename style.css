@@ -61,3 +61,26 @@ body{overflow-x:hidden}
 .selectedExercises{margin-bottom:12px}.selectedExercises>.section{display:flex;justify-content:space-between;align-items:center}.selectedExercises>.section span{font-size:10px;color:#2457c5;letter-spacing:0}
 .selectedLibCard{border-color:#9ebcff;background:#f8fbff}
 .selectedExercises .selectedSave{margin-top:10px}
+
+/* V3.0 module landing layer — isolated from the V2.0 module styles */
+body.v3-mode{background:#05090d;color:#f4f7fb}
+body.v3-mode .app{max-width:100%;padding-bottom:0}
+body.v3-mode #appScreen{min-height:100vh}
+body.v3-mode .topbar,body.v3-mode .bottom-nav{display:none!important}
+.v3Landing{position:relative;min-height:100vh;overflow:hidden;background:#05090d;isolation:isolate}
+.v3Backdrop{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(3,7,11,.12),rgba(3,7,11,.48) 35%,rgba(3,7,11,.72) 50%,rgba(3,7,11,.48) 65%,rgba(3,7,11,.12)),url('assets/v3_athletes_bg.jpg');background-size:cover;background-position:center top;filter:saturate(.92) contrast(1.03);z-index:-2}
+.v3Landing:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,10,.08),rgba(2,6,10,.32) 55%,rgba(2,6,10,.72));z-index:-1;pointer-events:none}
+.v3Overlay{width:min(620px,calc(100% - 34px));margin:0 auto;padding:38px 0 26px;min-height:100vh;text-align:center;background:linear-gradient(180deg,rgba(4,9,14,.82),rgba(4,9,14,.94));box-shadow:0 0 70px rgba(0,0,0,.38)}
+.v3Brand{font-size:clamp(40px,9vw,64px);line-height:.9;font-weight:950;letter-spacing:-3px;color:#f5f7fb}.v3Brand span,.v3Sub b,.v3Footer span{color:#f3c21b}
+.v3Sub{margin-top:10px;font-size:12px;letter-spacing:3px;color:#c8d0da}.v3Sub b{font-size:16px;font-weight:950}
+.v3Rule{width:42px;height:3px;background:#f3c21b;border-radius:10px;margin:17px auto 16px}
+.v3Headline{font-size:clamp(20px,5vw,29px);line-height:1.18;font-weight:850;letter-spacing:1.5px;color:#f5f7fb}.v3Headline strong{color:#f3c21b}
+.v3Motto{margin:17px auto 22px;font-size:13px;font-weight:900;letter-spacing:3px;color:#f5f7fb}.v3Motto:before,.v3Motto:after{content:"—";color:#f3c21b;margin:0 10px}
+.v3Module{width:calc(100% - 36px);margin:0 auto 10px;display:flex;align-items:center;text-align:left;gap:14px;border-radius:18px;padding:14px 15px;min-height:92px;border:1px solid rgba(255,255,255,.17);background:rgba(13,21,29,.9);color:#f4f7fb;box-shadow:0 8px 28px rgba(0,0,0,.22);font-family:inherit}
+.v3Module.active{border:1.5px solid #f3c21b;background:linear-gradient(100deg,rgba(74,56,7,.72),rgba(12,18,24,.96));cursor:pointer}.v3Module.locked{opacity:.94}
+.v3ModuleIcon{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border-right:1px solid rgba(255,255,255,.18);font-size:34px;color:#f3c21b}.fitnessIcon{color:#54a4ff}.yogaIcon{color:#ad82ff}.pilatesIcon{color:#35d0c4}
+.v3ModuleMain{min-width:0;flex:1}.v3ModuleMain b{display:block;font-size:17px;letter-spacing:.4px}.v3ModuleMain span{display:block;color:#f3c21b;font-size:11px;margin-top:5px}.locked .v3ModuleMain span{color:#7ea9dc}.yogaIcon+.v3ModuleMain span{color:#ad82ff}.pilatesIcon+.v3ModuleMain span{color:#35d0c4}.v3ModuleMain small{display:inline-block;margin-top:9px;font-size:9px;color:#d9e0e8;font-weight:800;letter-spacing:.5px}
+.v3Arrow{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#f3c21b;color:#111;font-size:31px;font-weight:900;flex:0 0 50px}.v3Soon{font-size:10px;font-weight:900;color:#c8d0da;white-space:nowrap}
+.v3Features{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:calc(100% - 46px);margin:27px auto 22px;border-top:1px solid rgba(255,255,255,.14);padding-top:18px}.v3Features span{font-size:23px;color:#f3c21b}.v3Features small{display:block;margin-top:6px;color:#c6ced8;font-size:8px;line-height:1.35;font-weight:800;letter-spacing:.3px}
+.v3Footer{font-size:9px;letter-spacing:1.7px;color:#8894a2}.v3Footer i{font-style:normal;color:#f3c21b;margin:0 5px}
+@media (max-width:520px){.v3Overlay{width:calc(100% - 18px);padding-top:28px;background:rgba(4,9,14,.93)}.v3Module{width:calc(100% - 18px);min-height:82px;padding:11px 10px;gap:10px}.v3ModuleIcon{width:46px;height:46px;flex-basis:46px;font-size:27px}.v3ModuleMain b{font-size:14px}.v3ModuleMain span{font-size:10px}.v3ModuleMain small{font-size:8px}.v3Arrow{width:42px;height:42px;flex-basis:42px;font-size:25px}.v3Features{width:calc(100% - 28px);margin-top:21px}.v3Features span{font-size:19px}.v3Motto{font-size:11px}.v3Backdrop{background-position:center top}}

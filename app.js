@@ -86,6 +86,46 @@ const screen=document.getElementById("appScreen");
 function photo(e){let n=THUMBNAILS[e.id];let src=`assets/detail-images/detail_${String(n).padStart(2,"0")}.jpg`;return `<div class="photo vignette"><img src="${esc(src)}" alt="${esc(e.name)}" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span>Görsel yüklenemedi</span></div>`}
 function thumbPhoto(e){let n=THUMBNAILS[e.id];let src=`assets/thumbs/sprite_${String(n).padStart(2,"0")}.jpg`;return `<div class="libThumb"><img src="${esc(src)}" alt="${esc(e.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span>Görsel</span></div>`}
 
+function v3SetShell(landing){
+  document.body.classList.toggle("v3-mode", !!landing);
+  const top=document.getElementById("appTopbar");
+  const version=document.getElementById("appVersion");
+  const bottom=document.querySelector(".bottom-nav");
+  if(top) top.style.display=landing?"none":"flex";
+  if(version) version.textContent=landing?"v3.0":"v2.0";
+  if(bottom) bottom.style.display=landing?"none":"flex";
+}
+function v3Home(){
+  v3SetShell(true);
+  screen.innerHTML=`
+  <section class="v3Landing">
+    <div class="v3Backdrop" aria-hidden="true"></div>
+    <div class="v3Overlay">
+      <div class="v3Brand">Vural<span>PT</span></div>
+      <div class="v3Sub"><b>K</b>işisel <b>A</b>ntrenman <b>S</b>istemi</div>
+      <div class="v3Rule"></div>
+      <div class="v3Headline">BUGÜN DAHA GÜÇLÜ<br><strong>YARIN DAHA İYİ</strong></div>
+      <div class="v3Motto">NO PAIN, NO GAIN.</div>
+
+      <button class="v3Module active" onclick="enterBodybuilding()">
+        <div class="v3ModuleIcon">♟</div>
+        <div class="v3ModuleMain"><b>VÜCUT GELİŞTİRME</b><span>Kas · Kuvvet · Hipertrofi</span><small>91 HAREKET &nbsp; · &nbsp; PROGRAM OLUŞTUR</small></div>
+        <div class="v3Arrow">→</div>
+      </button>
+
+      <div class="v3Module locked"><div class="v3ModuleIcon fitnessIcon">↗</div><div class="v3ModuleMain"><b>FITNESS</b><span>Kondisyon · Kardiyo · Sağlıklı Yaşam</span></div><div class="v3Soon">YAKINDA 🔒</div></div>
+      <div class="v3Module locked"><div class="v3ModuleIcon yogaIcon">◌</div><div class="v3ModuleMain"><b>YOGA</b><span>Esneklik · Mobilite · Denge</span></div><div class="v3Soon">YAKINDA 🔒</div></div>
+      <div class="v3Module locked"><div class="v3ModuleIcon pilatesIcon">◒</div><div class="v3ModuleMain"><b>PİLATES</b><span>Core · Postür · Kontrol</span></div><div class="v3Soon">YAKINDA 🔒</div></div>
+
+      <div class="v3Features"><span>▥<small>İLERLEMENİ<br>TAKİP ET</small></span><span>◎<small>HEDEFLERİNE<br>ULAŞ</small></span><span>▦<small>KİŞİSEL<br>PROGRAMLAR</small></span><span>☆<small>EN İYİ<br>SEN OL</small></span></div>
+      <div class="v3Footer">Vural<span>PT</span> <i>·</i> SENİN POTANSİYELİN, SENİN GÜCÜN</div>
+    </div>
+  </section>`;
+}
+function enterBodybuilding(){
+  v3SetShell(false);
+  home();
+}
 function home(){
  nav("navHome");
  let p=nextProgram(),last=S.history.at(-1),cal=totalEstimatedCalories(),cycle=cyclePrograms();
@@ -194,7 +234,7 @@ function renderA(days,btn){
  <section class="card"><div class="section">KAS GRUBU DAĞILIMI</div>${bars}<p class="analysisHint">En çok: <b>${esc(top)}</b> · En az: <b>${esc(low)}</b></p></section>
  <section class="card"><div class="section">VURALPT GERİ BİLDİRİMİ</div><p>${feedback}</p></section>`;
 }
-home();
+v3Home();
 /* V2.0 integrity helpers */
 function v20Status(){
   const c=cycleInfo();
