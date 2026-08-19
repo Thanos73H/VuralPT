@@ -6,8 +6,16 @@ const seed={
  B:{id:"B",name:"B Antrenmanı",focus:"Sırt + Omuz",exerciseIds:["lat_pulldown","cable_row","shoulder_press","lateral_raise","face_pull","dead_bug"]}
 };
 let S=load(), builder=[], builderConfig={}, current=null, restTimer=null, restLeft=0;
+const appScreen=document.getElementById("appScreen");
 migrateV2();
-function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x)return x;let old=JSON.parse(localStorage.getItem(OLD_KEY));if(old){localStorage.setItem(KEY,JSON.stringify(old));return old}return {history:[],programs:{},weights:{},cycles:{},last:null}}catch(e){return {history:[],programs:{},weights:{},cycles:{},last:null}}}
+function normalizeState(x){
+  x=x&&typeof x==="object"?x:{};
+  return {history:Array.isArray(x.history)?x.history:[],programs:x.programs&&typeof x.programs==="object"&&!Array.isArray(x.programs)?x.programs:{},weights:x.weights&&typeof x.weights==="object"&&!Array.isArray(x.weights)?x.weights:{},cycles:x.cycles&&typeof x.cycles==="object"&&!Array.isArray(x.cycles)?x.cycles:{},last:typeof x.last==="string"?x.last:null,progression:x.progression&&typeof x.progression==="object"&&!Array.isArray(x.progression)?x.progression:{},favorites:Array.isArray(x.favorites)?x.favorites:[]};
+}
+function load(){
+  try{let x=JSON.parse(localStorage.getItem(KEY));if(x)return normalizeState(x);let old=JSON.parse(localStorage.getItem(OLD_KEY));if(old){let n=normalizeState(old);localStorage.setItem(KEY,JSON.stringify(n));return n}return normalizeState(null)}
+  catch(e){console.error("VuralPT state yüklenemedi",e);return normalizeState(null)}
+}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function weightState(id){
   if(!S.progression) S.progression={};
@@ -44,7 +52,7 @@ function applyIncrease(id){
 }
 
 function ex(id){return LIBRARY.find(x=>x.id===id)}
-function programs(){return [seed.A,seed.B,...Object.values(S.programs)]}
+function programs(){return [seed.A,seed.B,...Object.values(S.programs||{})]}
 function prog(id){return programs().find(x=>x.id===id)}
 function nextId(){let ids=Object.keys(S.programs);let n=67;while(S.programs[String.fromCharCode(n)])n++;return String.fromCharCode(n)}
 function cyclePrograms(){return programs().filter(x=>x&&x.id)}
@@ -67,14 +75,14 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function nav(id){["navHome","navWorkout","navHistory","navAnalysis"].forEach(x=>document.getElementById(x)?.classList.toggle("active",x===id))}
 function photo(e){let id=esc(e.id);return `<div class="photo vignette"><svg viewBox="0 0 900 520" role="img" aria-label="${esc(e.name)}"><use href="assets/vignettes.svg#${id}"></use></svg></div><small class="credit">VuralPT Vinyet · Yerel</small>`}
 
-function home(){nav("navHome");let p=nextProgram(),last=S.history.at(-1);screen.innerHTML=`
+function home(){nav("navHome");let p=nextProgram(),last=S.history.at(-1);appScreen.innerHTML=`
 <section class="hero"><div class="eyebrow">BUGÜN</div><div class="suggest">● Önerilen: <b>${esc(p.name)}</b></div><h1>${esc(p.name.replace(" Antrenmanı",""))}</h1><p>${esc(p.focus)}</p>
 <div class="actions"><button class="primary" onclick="start('${p.id}')">ÖNERİLENİ BAŞLAT</button><button class="secondary" onclick="picker()">ANTRENMAN SEÇ</button></div>
 <div class="cycleStatus">Program sırası: <b>${programs().map(x=>esc(x.id)).join(" → ")}</b></div></section>
 <div class="grid2"><div class="metric"><span>Son antrenman</span><b>${last?esc(prog(last.type)?.name||last.type):"—"}</b><small>${last?date(last.date):"Henüz kayıt yok"}</small></div><div class="metric"><span>Toplam</span><b>${S.history.length}</b><small>tamamlanan antrenman</small></div></div>
 <section class="card"><div class="eyebrow">PROGRAM SIRASI</div><h3>${programs().map(x=>x.id).join(" → ")}</h3><p>Gün kaçırırsan sıra ilerlemez. Sistem son tamamlanan antrenmana göre öneri yapar.</p></section>`}
 
-function picker(){nav("navWorkout");let p=nextProgram(), customs=Object.values(S.programs);screen.innerHTML=`
+function picker(){nav("navWorkout");let p=nextProgram(), customs=Object.values(S.programs);appScreen.innerHTML=`
 <div class="head"><div class="eyebrow">ANTRENMAN SEÇ</div><h1>Bugün ne yapmalıyım?</h1><p>Önerilen programı başlatabilir veya başka bir program seçebilirsin.</p></div>
 <button class="choice recommended" onclick="start('${p.id}')"><label>ÖNERİLEN</label><b>${esc(p.name)}</b><span>${esc(p.focus)}</span><i>→</i></button>
 <div class="section">HAZIR PROGRAMLAR</div>${[seed.A,seed.B].map(choice).join("")}
@@ -84,14 +92,14 @@ function choice(p,custom){return `<button class="choice" onclick="start('${p.id}
 
 function builderView(id){
  let p=id?S.programs[id]:null;builder=p?[...p.exerciseIds]:[];builderConfig=p?.exerciseConfig?{...p.exerciseConfig}:{};let code=p?.id||nextId();
- screen.innerHTML=`<div class="head"><button class="back" onclick="picker()">← Antrenman seç</button><div class="eyebrow">ANTRENMAN OLUŞTUR</div><h1>${code}</h1><p>En fazla 8 hareket. Önce sağlık, sonra ilerleme.</p></div>
+ appScreen.innerHTML=`<div class="head"><button class="back" onclick="picker()">← Antrenman seç</button><div class="eyebrow">ANTRENMAN OLUŞTUR</div><h1>${code}</h1><p>En fazla 8 hareket. Önce sağlık, sonra ilerleme.</p></div>
 <label class="field">Antrenman adı<input id="pname" value="${esc(p?.name||"")}" placeholder="Örn. Göğüs + Omuz"></label>
 <div class="builderHead"><b>Hareketler</b><strong id="count">${builder.length} / 8</strong></div><div id="healthHint">${healthCheck(builder)}</div><div id="rows">${rows()}</div>
 <button class="add" onclick="libraryView('${code}')">＋ HAREKET EKLE</button><button class="primary wide" onclick="saveProgram('${code}')">ANTRENMANI OLUŞTUR</button>`
 }
 function configureBuilderExercise(id){
  let e=ex(id), p=builderConfig?.[id]||{sets:e.sets,reps:e.reps,weight:S.weights[id]??10};
- screen.innerHTML=`<div class="head"><button class="back" onclick="builderView('${window.builderCode}')">← Antrenmanı düzenle</button><div class="eyebrow">HAREKET AYARI</div><h1>${esc(e.name)}</h1></div>${photo(e)}
+ appScreen.innerHTML=`<div class="head"><button class="back" onclick="builderView('${window.builderCode}')">← Antrenmanı düzenle</button><div class="eyebrow">HAREKET AYARI</div><h1>${esc(e.name)}</h1></div>${photo(e)}
  <div class="configGrid"><label>Set<input id="cfgSets" type="number" min="1" max="6" value="${p.sets}"></label><label>Tekrar<input id="cfgReps" value="${esc(p.reps)}"></label><label>Ağırlık<input id="cfgWeight" type="number" step=".5" value="${p.weight}"> kg</label></div>
  <button class="primary wide" onclick="saveBuilderExercise('${id}')">KAYDET</button>`;
 }
@@ -102,16 +110,16 @@ function saveBuilderExercise(id){
 }
 function rows(){return builder.map((id,i)=>{let e=ex(id),c=builderConfig[id]||{sets:e.sets,reps:e.reps};return `<div class="row"><em>${i+1}</em><div><b>${esc(e.name)}</b><small>${esc(e.primary)} · ${c.sets} set · ${esc(c.reps)}</small></div><button onclick="configureBuilderExercise('${id}')">⚙</button><button onclick="removeEx('${id}')">×</button></div>`}).join("")||`<div class="emptyMini">Henüz hareket seçilmedi.</div>`}
 function removeEx(id){builder=builder.filter(x=>x!==id);document.getElementById("rows").innerHTML=rows();document.getElementById("count").textContent=`${builder.length} / 8`}
-function libraryView(code){screen.innerHTML=`<div class="head"><button class="back" onclick="builderView('${code}')">← Antrenmanı düzenle</button><div class="eyebrow">HAREKET KÜTÜPHANESİ</div><h1>Hareket seç</h1><p>${builder.length} / 8 seçili</p></div>
+function libraryView(code){appScreen.innerHTML=`<div class="head"><button class="back" onclick="builderView('${code}')">← Antrenmanı düzenle</button><div class="eyebrow">HAREKET KÜTÜPHANESİ</div><h1>Hareket seç</h1><p>${builder.length} / 8 seçili</p></div>
 <input id="q" class="search" placeholder="🔍 Hareket ara..." oninput="renderLibrary()"><div class="filters">${["Tümü","Göğüs","Sırt","Omuz","Biceps","Triceps","Bacak","Karın","Core","Conditioning"].map(x=>`<button onclick="filterLib='${x}';renderLibrary()">${x}</button>`).join("")}</div><div id="lib"></div>`;window.filterLib="Tümü";window.builderCode=code;renderLibrary()}
 function renderLibrary(){let q=(document.getElementById("q")?.value||"").toLowerCase(),f=window.filterLib||"Tümü";let a=LIBRARY.filter(e=>(f==="Tümü"||e.primary.includes(f)||f==="Bacak"&&["Quadriceps","Hamstring","Glute","Calf"].some(x=>e.primary.includes(x)))&&(!q||(`${e.name} ${e.primary} ${e.equipment}`).toLowerCase().includes(q)));document.getElementById("lib").innerHTML=a.map(e=>`<button class="libCard" onclick="detail('${e.id}')">${photo(e)}<div><b>${esc(e.name)}</b><small>${esc(e.primary)} · ${esc(e.equipment)}</small><small>${esc(e.level)} · ${esc(e.reps)} · ${e.sets} set</small></div><strong>${builder.includes(e.id)?"✓":"＋"}</strong></button>`).join("")}
-function detail(id){let e=ex(id),chosen=builder.includes(id);screen.innerHTML=`<div class="head"><button class="back" onclick="libraryView('${window.builderCode}')">← Kütüphane</button></div><section class="card detail">${photo(e)}<h1>${esc(e.name)}</h1><div class="tags"><span>${esc(e.primary)}</span><span>${esc(e.equipment)}</span><span>${esc(e.level)}</span></div><h3>Nasıl yapılır?</h3><p>${esc(e.how)}</p><h3>Dikkat</h3><p>${esc(e.attention)}</p><div class="suggested"><b>Önerilen başlangıç</b><span>${e.sets} set · ${esc(e.reps)} · ${e.rest} sn dinlenme</span></div><button class="secondary wide" onclick="toggleFavorite('${e.id}')">${(S.favorites||[]).includes(e.id)?"★ FAVORİLERDEN ÇIKAR":"☆ FAVORİLERE EKLE"}</button><button class="primary wide" onclick="toggle('${e.id}')">${chosen?"ÇIKAR":"ANTRENMANA EKLE"}</button></section>`}
+function detail(id){let e=ex(id),chosen=builder.includes(id);appScreen.innerHTML=`<div class="head"><button class="back" onclick="libraryView('${window.builderCode}')">← Kütüphane</button></div><section class="card detail">${photo(e)}<h1>${esc(e.name)}</h1><div class="tags"><span>${esc(e.primary)}</span><span>${esc(e.equipment)}</span><span>${esc(e.level)}</span></div><h3>Nasıl yapılır?</h3><p>${esc(e.how)}</p><h3>Dikkat</h3><p>${esc(e.attention)}</p><div class="suggested"><b>Önerilen başlangıç</b><span>${e.sets} set · ${esc(e.reps)} · ${e.rest} sn dinlenme</span></div><button class="secondary wide" onclick="toggleFavorite('${e.id}')">${(S.favorites||[]).includes(e.id)?"★ FAVORİLERDEN ÇIKAR":"☆ FAVORİLERE EKLE"}</button><button class="primary wide" onclick="toggle('${e.id}')">${chosen?"ÇIKAR":"ANTRENMANA EKLE"}</button></section>`}
 function toggle(id){if(builder.includes(id))builder=builder.filter(x=>x!==id);else{if(builder.length>=8){healthGate();return}builder.push(id)}if(builder.length===8){healthGate();return}libraryView(window.builderCode)}
-function healthGate(){screen.innerHTML=`<section class="health"><div class="healthIcon">+</div><div class="eyebrow">ÖNCE SAĞLIK</div><h1>8 hareket seçtin.</h1><p>VuralPT, tek antrenmanda en fazla 8 hareketi <b>uygulama sınırı</b> olarak kullanır. Bu sayı tıbbi bir güvenlik eşiği değildir.</p><div class="healthBox"><b>Devam etmeden önce</b><span>Seçtiğin hareketlerin gerçekten gerekli olduğunu ve toplam hacmin sana uygun olduğunu gözden geçir.</span><span>Ağrı, baş dönmesi, olağandışı nefes darlığı veya kendini kötü hissetme durumunda egzersizi bırak.</span></div><button class="primary wide" onclick="builderView('${window.builderCode}')">SEÇİMLERİ GÖZDEN GEÇİR</button><button class="secondary wide" onclick="builderView('${window.builderCode}')">DEVAM ET</button></section>`}
+function healthGate(){appScreen.innerHTML=`<section class="health"><div class="healthIcon">+</div><div class="eyebrow">ÖNCE SAĞLIK</div><h1>8 hareket seçtin.</h1><p>VuralPT, tek antrenmanda en fazla 8 hareketi <b>uygulama sınırı</b> olarak kullanır. Bu sayı tıbbi bir güvenlik eşiği değildir.</p><div class="healthBox"><b>Devam etmeden önce</b><span>Seçtiğin hareketlerin gerçekten gerekli olduğunu ve toplam hacmin sana uygun olduğunu gözden geçir.</span><span>Ağrı, baş dönmesi, olağandışı nefes darlığı veya kendini kötü hissetme durumunda egzersizi bırak.</span></div><button class="primary wide" onclick="builderView('${window.builderCode}')">SEÇİMLERİ GÖZDEN GEÇİR</button><button class="secondary wide" onclick="builderView('${window.builderCode}')">DEVAM ET</button></section>`}
 function saveProgram(code){let name=document.getElementById("pname").value.trim()||`${code} Antrenmanı`;if(!builder.length){alert("En az 1 hareket seç.");return}S.programs[code]={id:code,name,focus:builder.map(x=>ex(x).primary).slice(0,4).join(" + "),exerciseIds:[...builder],exerciseConfig:{...builderConfig}};save();picker()}
 
 function start(type){let p=prog(type);current={type,index:0,start:Date.now(),session:[],reps:[]};exerciseView()}
-function exerciseView(){clearInterval(restTimer);let p=prog(current.type),list=p.exerciseIds.map(ex),e=list[current.index],w=S.weights[e.id]??(e.equipment==="Vücut ağırlığı"?0:10);screen.innerHTML=`<div class="workTop"><div><div class="eyebrow">${esc(p.name)}</div><b>Hareket ${current.index+1} / ${list.length}</b></div><strong>${current.index+1}/${list.length}</strong></div><div class="progress"><i style="width:${(current.index+1)/list.length*100}%"></i></div>
+function exerciseView(){clearInterval(restTimer);let p=prog(current.type),list=p.exerciseIds.map(ex),e=list[current.index],w=S.weights[e.id]??(e.equipment==="Vücut ağırlığı"?0:10);appScreen.innerHTML=`<div class="workTop"><div><div class="eyebrow">${esc(p.name)}</div><b>Hareket ${current.index+1} / ${list.length}</b></div><strong>${current.index+1}/${list.length}</strong></div><div class="progress"><i style="width:${(current.index+1)/list.length*100}%"></i></div>
 <section class="card workoutCard">${photo(e)}<div class="titleRow"><div><h1>${esc(e.name)}</h1><p>${esc(e.primary)}</p></div><span class="cycle">${S.cycles[e.id]||0}/10</span></div><div class="meta"><span>${e.sets} set</span><span>${esc(e.reps)} tekrar</span><span>${e.rest} sn</span></div>${progressionNotice(e.id)}
 <label class="weight">Ağırlık<div><input id="weight" type="number" step=".5" value="${w}" ${e.equipment==="Vücut ağırlığı"?"disabled":""}><b>${e.equipment==="Vücut ağırlığı"?"—":"kg"}</b></div></label>
 <button class="saveWeight" onclick="saveW('${e.id}')">✓ Ağırlığı kaydet</button><details><summary>Hareketi nasıl yapmalıyım?</summary><p>${esc(e.how)}</p></details>
@@ -124,15 +132,15 @@ function tick(){let x=document.getElementById("rt");if(x)x.textContent=`${String
 function skipRest(){clearInterval(restTimer);document.getElementById("rest")?.classList.add("hidden")}
 function nextMove(){let p=prog(current.type),e=p.exerciseIds.map(ex)[current.index],reps=current.reps.slice();if(reps.length<e.sets&&!confirm("Tüm setler tamamlanmadı. Devam edilsin mi?"))return;let ok=reps.length===e.sets;current.session.push({id:e.id,reps,weight:S.weights[e.id]??weightState(e.id).weight??0,success:ok});
 if(ok && e.equipment!=="Vücut ağırlığı") recordSuccessfulExposure(e.id,S.weights[e.id]??weightState(e.id).weight);if(current.index<p.exerciseIds.length-1){current.index++;current.reps=[];exerciseView()}else finish()}
-function finish(){let record={date:new Date().toISOString(),type:current.type,duration:Date.now()-current.start,exercises:current.session};S.history.push(record);S.last=current.type;record.exercises.forEach(x=>{if(x.success)S.cycles[x.id]=Math.min(10,(S.cycles[x.id]||0)+1)});save();let inc=record.exercises.filter(x=>S.cycles[x.id]>=10).map(x=>ex(x.id).name);screen.innerHTML=`<section class="finish"><div class="finishIcon">✓</div><div class="eyebrow">ANTRENMAN KAYDEDİLDİ</div><h1>${esc(prog(record.type).name)}</h1><p>${fmt(record.date)} · ${dur(record.duration)}</p>${inc.length?`<div class="increase"><b>Ağırlık artırma zamanı</b><span>${inc.map(esc).join("<br>")}</span></div>`:""}<button class="primary wide" onclick="home()">ANA SAYFAYA DÖN</button><button class="secondary wide" onclick="historyView()">KAYDI GÖR</button></section>`}
+function finish(){let record={date:new Date().toISOString(),type:current.type,duration:Date.now()-current.start,exercises:current.session};S.history.push(record);S.last=current.type;record.exercises.forEach(x=>{if(x.success)S.cycles[x.id]=Math.min(10,(S.cycles[x.id]||0)+1)});save();let inc=record.exercises.filter(x=>S.cycles[x.id]>=10).map(x=>ex(x.id).name);appScreen.innerHTML=`<section class="finish"><div class="finishIcon">✓</div><div class="eyebrow">ANTRENMAN KAYDEDİLDİ</div><h1>${esc(prog(record.type).name)}</h1><p>${fmt(record.date)} · ${dur(record.duration)}</p>${inc.length?`<div class="increase"><b>Ağırlık artırma zamanı</b><span>${inc.map(esc).join("<br>")}</span></div>`:""}<button class="primary wide" onclick="home()">ANA SAYFAYA DÖN</button><button class="secondary wide" onclick="historyView()">KAYDI GÖR</button></section>`}
 
-function historyView(){nav("navHistory");let h=S.history;if(!h.length){screen.innerHTML=`<div class="head"><div class="eyebrow">GEÇMİŞ</div><h1>Antrenman Günlüğü</h1></div><div class="empty"><h2>Henüz kayıt yok</h2><p>İlk antrenmanını tamamladığında kayıt burada görünecek.</p></div>`;return}
-let last=h.at(-1);screen.innerHTML=`<div class="head"><div class="eyebrow">GEÇMİŞ</div><h1>Antrenman Günlüğü</h1><p>Yalnızca gerçekten tamamlanan antrenmanlar kaydedilir.</p></div><div class="last"><span>SON ANTRENMAN</span><b>${esc(prog(last.type).name)}</b><small>${fmt(last.date)} · ${dur(last.duration)}</small></div><div>${[...h].reverse().map((x,i)=>`<button class="log" onclick="logDetail(${h.length-1-i})"><div><b>${esc(prog(x.type).name)}</b><small>${fmt(x.date)}</small></div><strong>${dur(x.duration)}<small>${x.exercises.length} hareket →</small></strong></button>`).join("")}</div><button class="danger" onclick="clearHistory()">TÜM KAYITLARI SİL</button>`}
-function logDetail(i){let h=S.history[i];screen.innerHTML=`<div class="head"><button class="back" onclick="historyView()">← Geçmiş</button><div class="eyebrow">ANTRENMAN DETAYI</div><h1>${esc(prog(h.type).name)}</h1><p>${fmt(h.date)} · ${dur(h.duration)}</p></div>${h.exercises.map(x=>`<div class="logDetail"><div><b>${esc(ex(x.id).name)}</b><span>${x.weight?x.weight+" kg":"Vücut ağırlığı"}</span></div><small>${x.reps.map((r,i)=>`Set ${i+1}: ${r}`).join(" · ")}</small></div>`).join("")}<button class="danger" onclick="deleteLog(${i})">BU KAYDI SİL</button>`}
+function historyView(){nav("navHistory");let h=S.history;if(!h.length){appScreen.innerHTML=`<div class="head"><div class="eyebrow">GEÇMİŞ</div><h1>Antrenman Günlüğü</h1></div><div class="empty"><h2>Henüz kayıt yok</h2><p>İlk antrenmanını tamamladığında kayıt burada görünecek.</p></div>`;return}
+let last=h.at(-1);appScreen.innerHTML=`<div class="head"><div class="eyebrow">GEÇMİŞ</div><h1>Antrenman Günlüğü</h1><p>Yalnızca gerçekten tamamlanan antrenmanlar kaydedilir.</p></div><div class="last"><span>SON ANTRENMAN</span><b>${esc(prog(last.type).name)}</b><small>${fmt(last.date)} · ${dur(last.duration)}</small></div><div>${[...h].reverse().map((x,i)=>`<button class="log" onclick="logDetail(${h.length-1-i})"><div><b>${esc(prog(x.type).name)}</b><small>${fmt(x.date)}</small></div><strong>${dur(x.duration)}<small>${x.exercises.length} hareket →</small></strong></button>`).join("")}</div><button class="danger" onclick="clearHistory()">TÜM KAYITLARI SİL</button>`}
+function logDetail(i){let h=S.history[i];appScreen.innerHTML=`<div class="head"><button class="back" onclick="historyView()">← Geçmiş</button><div class="eyebrow">ANTRENMAN DETAYI</div><h1>${esc(prog(h.type).name)}</h1><p>${fmt(h.date)} · ${dur(h.duration)}</p></div>${h.exercises.map(x=>`<div class="logDetail"><div><b>${esc(ex(x.id).name)}</b><span>${x.weight?x.weight+" kg":"Vücut ağırlığı"}</span></div><small>${x.reps.map((r,i)=>`Set ${i+1}: ${r}`).join(" · ")}</small></div>`).join("")}<button class="danger" onclick="deleteLog(${i})">BU KAYDI SİL</button>`}
 function deleteLog(i){if(confirm("Bu kayıt silinsin mi?")){S.history.splice(i,1);S.last=S.history.at(-1)?.type||null;save();historyView()}}
 function clearHistory(){if(confirm("Tüm antrenman kayıtları silinsin mi?")){S.history=[];S.last=null;save();historyView()}}
 
-function analysis(){nav("navAnalysis");screen.innerHTML=`<div class="head"><div class="eyebrow">ANALİZ</div><h1>Vural'ın gelişimi</h1><p>Son 7, 15 veya 30 günde ne çalıştığını gör.</p></div><div class="ranges"><button class="on" onclick="renderA(7,this)">7 gün</button><button onclick="renderA(15,this)">15 gün</button><button onclick="renderA(30,this)">1 ay</button></div><div class="analysisTabs"><button class="on" onclick="renderA(7)">Analiz</button><button onclick="calendarView()">Takvim</button><button onclick="weightChart()">Ağırlık</button></div><div id="analysisBody"></div>`;renderA(7)}
+function analysis(){nav("navAnalysis");appScreen.innerHTML=`<div class="head"><div class="eyebrow">ANALİZ</div><h1>Vural'ın gelişimi</h1><p>Son 7, 15 veya 30 günde ne çalıştığını gör.</p></div><div class="ranges"><button class="on" onclick="renderA(7,this)">7 gün</button><button onclick="renderA(15,this)">15 gün</button><button onclick="renderA(30,this)">1 ay</button></div><div class="analysisTabs"><button class="on" onclick="renderA(7)">Analiz</button><button onclick="calendarView()">Takvim</button><button onclick="weightChart()">Ağırlık</button></div><div id="analysisBody"></div>`;renderA(7)}
 function renderA(days,btn){
  document.querySelectorAll(".ranges button").forEach(x=>x.classList.remove("on"));
  if(btn)btn.classList.add("on");
@@ -152,7 +160,7 @@ function renderA(days,btn){
  let top=Object.entries(sets).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
  let low=Object.entries(sets).sort((a,b)=>a[1]-b[1])[0]?.[0]||"—";
  let feedback=hs.length?`Son ${days} günde <b>${hs.length}</b> antrenman yaptın. En yüksek çalışma hacmi <b>${esc(top)}</b> bölgesinde. Dağılımı düzenli takip etmeye devam et.`:"Seçilen dönemde tamamlanmış antrenman yok.";
- screen.querySelector("#analysisBody").innerHTML=`
+ appScreen.querySelector("#analysisBody").innerHTML=`
  <div class="summary"><div><span>Antrenman</span><b>${hs.length}</b></div><div><span>Toplam set</span><b>${Object.values(sets).reduce((a,b)=>a+b,0)}</b></div><div><span>Toplam tekrar</span><b>${repsTotal}</b></div></div>
  <div class="summary"><div><span>Toplam süre</span><b>${minutes} dk</b></div><div><span>Ortalama</span><b>${avg} dk</b></div><div><span>Hacim</span><b>${Math.round(vol).toLocaleString("tr-TR")} kg</b></div></div>
  <section class="card"><div class="section">KAS GRUBU DAĞILIMI</div>${bars}<p class="analysisHint">En çok: <b>${esc(top)}</b> · En az: <b>${esc(low)}</b></p></section>
@@ -187,13 +195,13 @@ function calendarView(){
  let offset=(first.getDay()+6)%7; for(let i=0;i<offset;i++)html+=`<span class="emptyDay"></span>`;
  for(let d=1;d<=last.getDate();d++){let h=byDay[d];html+=`<button class="${h?'trained':'emptyDayBtn'}" onclick="${h?`logDetail(${S.history.indexOf(h)})`:"void(0)"}"><b>${d}</b>${h?`<small>${esc(prog(h.type)?.id||h.type)}</small>`:`<small>—</small>`}</button>`}
  html+=`</div><p class="calendarLegend">İşaretli günler tamamlanan antrenmanlardır. Boş günler kayıt olarak sayılmaz.</p></div>`;
- screen.querySelector("#analysisBody").innerHTML=html;
+ appScreen.querySelector("#analysisBody").innerHTML=html;
 }
 function weightChart(){
  let by={};
  S.history.forEach(h=>h.exercises.forEach(x=>{if(!by[x.id])by[x.id]=[];if(Number(x.weight)>0)by[x.id].push({d:x.weight,date:x.date})}));
  let items=Object.entries(by).filter(([id,a])=>a.length>=1).slice(0,12).map(([id,a])=>{let e=ex(id),first=a[0].d,last=a.at(-1).d,delta=last-first;return `<div class="change"><div><b>${esc(e.name)}</b><small>${first} kg → ${last} kg</small></div><strong>${delta>0?"+":""}${delta} kg</strong></div>`}).join("");
- screen.querySelector("#analysisBody").innerHTML=`<section class="card"><div class="section">AĞIRLIK GELİŞİMİ</div>${items||`<div class="emptyMini">Henüz yeterli ağırlık kaydı yok.</div>`}</section>`;
+ appScreen.querySelector("#analysisBody").innerHTML=`<section class="card"><div class="section">AĞIRLIK GELİŞİMİ</div>${items||`<div class="emptyMini">Henüz yeterli ağırlık kaydı yok.</div>`}</section>`;
 }
 
 function toggleFavorite(id){
