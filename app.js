@@ -117,7 +117,7 @@ function v3Home(){
       <div class="v3Module locked"><div class="v3ModuleIcon yogaIcon">◌</div><div class="v3ModuleMain"><b>YOGA</b><span>Esneklik · Mobilite · Denge</span></div><div class="v3Soon">YAKINDA 🔒</div></div>
       <div class="v3Module locked"><div class="v3ModuleIcon pilatesIcon">◒</div><div class="v3ModuleMain"><b>PİLATES</b><span>Core · Postür · Kontrol</span></div><div class="v3Soon">YAKINDA 🔒</div></div>
 
-      <div class="v3Features"><span>▥<small>İLERLEMENİ<br>TAKİP ET</small></span><span>◎<small>HEDEFLERİNE<br>ULAŞ</small></span><span>▦<small>KİŞİSEL<br>PROGRAMLAR</small></span><span>☆<small>EN İYİ<br>SEN OL</small></span></div>
+      <div class="v3Features"><span>▥<small>İLERLEME</small></span><span>◎<small>HEDEFLER</small></span><span>▦<small>KİŞİSEL</small></span><span>☆<small>EN İYİ</small></span></div>
       <div class="v3Footer">Vural<span>PT</span> <i>·</i> SENİN POTANSİYELİN, SENİN GÜCÜN</div>
     </div>
   </section>`;
