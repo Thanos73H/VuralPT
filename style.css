@@ -36,6 +36,3 @@ body{overflow-x:hidden}
 .summary b{display:block;font-size:17px;margin-top:3px}
 .emptyMini{padding:14px;text-align:center;color:#98a2b3;font-size:11px}
 @media(max-width:380px){.screen{padding-left:10px;padding-right:10px}.actions{grid-template-columns:1fr}.setRow{grid-template-columns:30px 1fr 1fr 38px}.summary b{font-size:15px}}
-
-/* V2.0 single-file exercise vignette sprite */
-.photo.vignette svg{display:block;width:100%;height:auto;aspect-ratio:900/520;object-fit:contain}

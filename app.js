@@ -6,16 +6,9 @@ const seed={
  B:{id:"B",name:"B Antrenmanı",focus:"Sırt + Omuz",exerciseIds:["lat_pulldown","cable_row","shoulder_press","lateral_raise","face_pull","dead_bug"]}
 };
 let S=load(), builder=[], builderConfig={}, current=null, restTimer=null, restLeft=0;
-const appScreen=document.getElementById("appScreen");
 migrateV2();
-function normalizeState(x){
-  x=x&&typeof x==="object"?x:{};
-  return {history:Array.isArray(x.history)?x.history:[],programs:x.programs&&typeof x.programs==="object"&&!Array.isArray(x.programs)?x.programs:{},weights:x.weights&&typeof x.weights==="object"&&!Array.isArray(x.weights)?x.weights:{},cycles:x.cycles&&typeof x.cycles==="object"&&!Array.isArray(x.cycles)?x.cycles:{},last:typeof x.last==="string"?x.last:null,progression:x.progression&&typeof x.progression==="object"&&!Array.isArray(x.progression)?x.progression:{},favorites:Array.isArray(x.favorites)?x.favorites:[]};
-}
-function load(){
-  try{let x=JSON.parse(localStorage.getItem(KEY));if(x)return normalizeState(x);let old=JSON.parse(localStorage.getItem(OLD_KEY));if(old){let n=normalizeState(old);localStorage.setItem(KEY,JSON.stringify(n));return n}return normalizeState(null)}
-  catch(e){console.error("VuralPT state yüklenemedi",e);return normalizeState(null)}
-}
+const appScreen=document.getElementById('screen');
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x)return x;let old=JSON.parse(localStorage.getItem(OLD_KEY));if(old){localStorage.setItem(KEY,JSON.stringify(old));return old}return {history:[],programs:{},weights:{},cycles:{},last:null}}catch(e){return {history:[],programs:{},weights:{},cycles:{},last:null}}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function weightState(id){
   if(!S.progression) S.progression={};
@@ -52,7 +45,7 @@ function applyIncrease(id){
 }
 
 function ex(id){return LIBRARY.find(x=>x.id===id)}
-function programs(){return [seed.A,seed.B,...Object.values(S.programs||{})]}
+function programs(){return [seed.A,seed.B,...Object.values(S.programs)]}
 function prog(id){return programs().find(x=>x.id===id)}
 function nextId(){let ids=Object.keys(S.programs);let n=67;while(S.programs[String.fromCharCode(n)])n++;return String.fromCharCode(n)}
 function cyclePrograms(){return programs().filter(x=>x&&x.id)}
@@ -73,7 +66,7 @@ function date(d){return new Intl.DateTimeFormat("tr-TR",{day:"2-digit",month:"2-
 function dur(ms){let m=Math.round(ms/60000);return m+" dk"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function nav(id){["navHome","navWorkout","navHistory","navAnalysis"].forEach(x=>document.getElementById(x)?.classList.toggle("active",x===id))}
-function photo(e){let id=esc(e.id);return `<div class="photo vignette"><svg viewBox="0 0 900 520" role="img" aria-label="${esc(e.name)}"><use href="assets/vignettes.svg#${id}"></use></svg></div><small class="credit">VuralPT Vinyet · Yerel</small>`}
+function photo(e){let src=`assets/info/${e.id}.svg`;return `<div class="photo vignette"><img src="${esc(src)}" alt="${esc(e.name)}" onclick="detail('${e.id}')" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span>Info görseli yüklenemedi</span></div><small class="credit">VuralPT Hareket Rehberi · Yerel</small>`}
 
 function home(){nav("navHome");let p=nextProgram(),last=S.history.at(-1);appScreen.innerHTML=`
 <section class="hero"><div class="eyebrow">BUGÜN</div><div class="suggest">● Önerilen: <b>${esc(p.name)}</b></div><h1>${esc(p.name.replace(" Antrenmanı",""))}</h1><p>${esc(p.focus)}</p>
