@@ -1,2 +1,0 @@
-54 exact human-illustration vignettes; fixed contain rendering; corrected assets/info/<id>.svg routing; cache bumped.
-No workout content or logic changed.
