@@ -86,7 +86,7 @@ function picker(){nav("navWorkout");let p=nextProgram(), customs=Object.values(S
 <div class="head"><div class="eyebrow">ANTRENMAN SEÇ</div><h1>Bugün ne yapmalıyım?</h1><p>Önerilen programı başlatabilir veya başka bir program seçebilirsin.</p></div>
 <button class="choice recommended" onclick="start('${p.id}')"><label>ÖNERİLEN</label><b>${esc(p.name)}</b><span>${esc(p.focus)}</span><i>→</i></button>
 <div class="section">HAZIR PROGRAMLAR</div>${[seed.A,seed.B].map(choice).join("")}
-${custom.length?'<div class="section">KENDİ ANTRENMANLARIM</div>':""}${custom.map(x=>choice(x,true)).join("")}
+${customs.length?'<div class="section">KENDİ ANTRENMANLARIM</div>':""}${customs.map(x=>choice(x,true)).join("")}
 <button class="create" onclick="builderView()">＋ Yeni antrenman oluştur</button>`}
 function choice(p,custom){return `<button class="choice" onclick="start('${p.id}')"><b>${esc(p.name)}</b><span>${esc(p.focus)} · ${p.exerciseIds.length} hareket</span><i>→</i></button>${custom?`<button class="edit" onclick="event.stopPropagation();builderView('${p.id}')">Düzenle</button>`:""}`}
 
